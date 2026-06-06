@@ -26,6 +26,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// ── Verify Gmail connection on startup ────────────────────────
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('❌  Gmail connection FAILED:', error.message);
+    console.error('    Check GMAIL_USER and GMAIL_PASS env variables!');
+  } else {
+    console.log('✅  Gmail connection verified — ready to send emails!');
+  }
+});
+
 // ── POST /send-email  (the form hits this route) ──────────────
 app.post('/send-email', async (req, res) => {
   const { name, email, subject, message } = req.body;
@@ -48,9 +58,9 @@ app.post('/send-email', async (req, res) => {
 
   // ── Build the email ────────────────────────────────────────
   const mailOptions = {
-    from:     `"${name}" <${process.env.GMAIL_USER}>`,  // sender display
-    to:       process.env.GMAIL_USER,                    // your inbox
-    replyTo:  email,                                     // reply goes to sender
+    from:     `"Portfolio Contact" <${process.env.GMAIL_USER}>`,  // avoids spam
+    to:       process.env.GMAIL_USER,                             // your inbox
+    replyTo:  `"${name}" <${email}>`,                            // reply goes to sender
     subject:  `[Portfolio] ${subject || 'New message from ' + name}`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:auto;padding:24px;

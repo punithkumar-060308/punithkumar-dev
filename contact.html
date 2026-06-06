@@ -309,6 +309,10 @@
       });
     });
 
+    const API_BASE = window.location.protocol === 'file:'
+      ? 'http://localhost:3000'
+      : window.location.origin;
+
     function setLoading(on) {
       submitBtn.disabled       = on;
       btnText.textContent      = on ? 'Sending…' : 'Send Message';
@@ -352,7 +356,7 @@
         // POST JSON to the Express backend
         let res;
         try {
-          res = await fetch('/send-email', {
+          res = await fetch(`${API_BASE}/send-email`, {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -364,7 +368,7 @@
           });
         } catch (networkErr) {
           // Server not running or unreachable
-          throw new Error('Cannot reach the server. Make sure you ran "npm start" in the portfolio folder.');
+          throw new Error('Cannot reach the server. Make sure you ran "npm start" in the portfolio folder or that the deployed backend is reachable.');
         }
 
         // Guard: make sure response is JSON before parsing
